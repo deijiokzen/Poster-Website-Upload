@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMOD Big Data – Sokoban Poster v18</title>
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { font-size: clamp(6.5px, 0.92vw, 11.5px); }
+
+body {
+  background: #555;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 1.4em;
+  font-family: Arial, sans-serif;
+  overflow-x: auto;
+  min-width: min-content;
+  /* Reset font-size so all columns inherit from html root equally */
+  font-size: 1rem;
+}
+
+/* ── POSTER SHELL ── */
+.poster {
+  width: 100%;
+  max-width: 1200px;
+  background: #fff;
+  box-shadow: 0 6px 40px rgba(0,0,0,0.6);
+  display: grid;
+  grid-template-columns: 22fr 44fr 22fr;
+  overflow: hidden;
+  border: 0.38em solid #E97132;
+}
+
+/* ── COLUMNS ── */
+.col-left  { background:#fafaf8;    padding:0.8em 0.75em; display:flex; flex-direction:column; gap:0.45em; border-right: 0.23em solid #E97132; font-size: 1rem; min-width: 0; overflow: hidden; }
+.col-mid   { background:#154734; padding:0.8em 0.75em; display:flex; flex-direction:column; gap:0.55em; font-size: 1rem; min-width: 0; overflow: hidden; }
+.col-right { background:#fafaf8;    padding:0.8em 0.75em; display:flex; flex-direction:column; gap:0.45em; border-left: 0.23em solid #E97132; font-size: 1rem; min-width: 0; overflow: hidden; }
+
+/* ── GROUP BADGE ── */
+.group-badge {
+  background: #196B24;
+  padding: 0.4em 0.75em;
+  display: inline-flex; flex-direction: column;
+  align-self: flex-start;
+  margin: -1em -0.9em 0 -0.9em;
+}
+.group-badge .lbl-g { font-size:0.65em; font-weight:bold; color:#fff; letter-spacing:.08em; }
+.group-badge .lbl-n { font-size:1.1em;  font-weight:bold; color:#fff; }
+
+/* ── SHARED SECTION STYLES ── */
+.sec-head {
+  font-size: 0.8em; font-weight:bold; color:#154734;
+  border-bottom: 0.12em solid #E97132; padding-bottom:0.1em; margin-bottom:0.25em;
+}
+.sec-body { font-size:0.68em; color:#222; line-height:1.52; }
+.sec-body p  { margin-bottom:0.22em; }
+.sec-body ul { padding-left:0.8em; }
+.sec-body li { margin-bottom:0.16em; }
+
+/* ── LEFT COLUMN HEADER ── */
+.poster-title    { font-size:1.0em; font-weight:bold; color:#154734; line-height:1.25; }
+.poster-subtitle { font-size:0.66em; color:#444; line-height:1.3; }
+.author-row { display:flex; align-items:center; gap:0.4em; }
+.author-icon { width:1.1em; height:1.1em; flex-shrink:0; }
+.author-name { font-size:0.66em; color:#444; font-weight:600; }
+
+/* ── FLOWCHART ── */
+.flow-wrap svg { width:100%; height:auto; display:block; }
+
+/* ── CENTRE — main heading ── */
+.main-finding p {
+  font-size: 1.4em;
+  font-weight:bold; color:#fff; line-height:1.2;
+}
+.main-finding .sub-find {
+  font-size:0.69em; color:rgba(255,255,255,0.82);
+  margin-top:0.3em; font-style:italic; line-height:1.42;
+}
+
+/* ── RQ CARDS ── */
+.rq-header {
+  font-size:0.64em; font-weight:bold; color:#f5b87a;
+  text-transform:uppercase; letter-spacing:.12em;
+}
+.rq-cards { display:flex; flex-direction:column; gap:0.28em; }
+.rq-card {
+  display:flex; align-items:stretch; gap:0;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:0.3em;
+  overflow:hidden;
+}
+.rq-card-num {
+  font-size:1.6em; font-weight:900; color:rgba(168,213,181,0.3);
+  min-width:1.5em; display:flex; align-items:center; justify-content:center;
+  padding:0.2em 0.3em;
+  border-right:1px solid rgba(255,255,255,0.12);
+  line-height:1; font-style:italic;
+  flex-shrink:0;
+}
+.rq-card-body { padding:0.32em 0.45em; display:flex; flex-direction:column; gap:0.18em; flex:1; min-width:0; }
+.rq-card-q { font-size:0.67em; color:rgba(255,255,255,0.82); line-height:1.38; font-style:italic; }
+.rq-card-sep { height:1px; background:rgba(255,255,255,0.12); margin:0.05em 0; }
+.rq-card-find { font-size:0.65em; color:#a8d5b5; line-height:1.38; }
+
+/* ── MECHANICS NODES ── */
+.mech-head { font-size:0.64em; font-weight:bold; color:#f5b87a; text-transform:uppercase; letter-spacing:.1em; }
+.mech-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.3em;
+}
+.mech-node {
+  background: #0d2b1e;
+  border: 1px solid #2d8a4e;
+  border-radius: 0.35em;
+  padding: 0.35em 0.3em;
+  display: flex; flex-direction:column; align-items:center; gap:0.18em;
+  text-align: center;
+}
+.mech-icon { font-size: 1.9em; line-height:1; }
+.mech-name { font-size: 0.60em; font-weight:bold; color:#a8d5b5; line-height:1.2; }
+.mech-desc { font-size: 0.52em; color:rgba(168,213,181,0.65); line-height:1.25; }
+.mech-node.highlight { border-color:rgba(233,113,50,0.7); background:rgba(233,113,50,0.15); }
+.mech-node.highlight .mech-name { color:#f5b87a; }
+.mech-node.highlight .mech-desc { color:rgba(245,184,122,0.65); }
+
+/* Solver panels */
+.solver-head { font-size:0.64em; font-weight:bold; color:#f5b87a; text-transform:uppercase; letter-spacing:.08em; }
+.solver-panels { display:flex; gap:0.45em; }
+.solver-panel {
+  flex:1; border-radius:0.38em; padding:0.6em 0.65em;
+  display:flex; flex-direction:column; gap:0.28em;
+}
+.solver-panel.beam { background:#0d2b1e; border:0.09em solid #2d8a4e; }
+.solver-panel.pq   { background:#0a2218; border:0.09em solid #196B24; }
+.sp-name { font-size:1.05em; font-weight:bold; line-height:1.2; }
+.beam .sp-name { color:#a8d5b5; }
+.pq   .sp-name { color:#7ecf9a; }
+.sp-tag  { font-size:0.80em; color:rgba(255,255,255,0.75); margin-top:-0.1em; }
+.sp-body { font-size:0.86em; color:rgba(255,255,255,0.92); line-height:1.5; }
+.sp-body strong { color:#fff; }
+.sp-score { font-size:0.82em; color:rgba(255,255,255,0.85); border-top:1px solid rgba(255,255,255,0.18); padding-top:0.26em; margin-top:0.06em; }
+
+/* Beam bars */
+.beam-bars { display:flex; align-items:flex-end; gap:0.22em; margin:0.2em 0; }
+.beam-bar  { background:#4a9a74; border-radius:0.15em 0.15em 0 0; width:2.0em; display:flex; align-items:flex-end; justify-content:center; }
+.beam-bar span { font-size:0.72em; color:#fff; padding-bottom:2px; font-weight:bold; }
+.beam-label { font-size:0.76em; color:rgba(255,255,255,0.72); align-self:center; margin-left:0.35em; }
+
+/* Thread grid */
+.thread-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0.18em; margin:0.18em 0; }
+.t-cell {
+  background:rgba(45,138,78,0.3); border:1px solid rgba(45,138,78,0.55);
+  border-radius:0.15em; padding:0.2em 0.25em;
+  font-size:0.76em; color:#a8d5b5; text-align:center; line-height:1.3;
+}
+.t-cell .t-dir { font-size:1.3em; display:block; }
+.t-cell .t-lbl { font-size:0.88em; color:rgba(255,255,255,0.7); }
+
+/* ── SIDE VIZ CARDS ── */
+.side-viz-stack { display:flex; gap:0.4em; }
+.side-viz-card {
+  flex:1; background:#fff;
+  border:1px solid rgba(233,113,50,0.2);
+  border-radius:0.3em; padding:0.3em 0.28em;
+  display:flex; flex-direction:column;
+}
+.side-vc-title {
+  font-size:0.68em; font-weight:bold; color:#E97132;
+  text-transform:uppercase; letter-spacing:.04em; margin-bottom:0.12em;
+}
+.side-viz-card svg { width:100%; height:auto; display:block; }
+.side-vc-desc { font-size:0.63em; color:#444; line-height:1.4; margin-top:0.18em; }
+
+.logo-box {
+  border: 0.12em solid rgba(21,71,52,0.2);
+  border-radius:0.3em;
+  padding:0.5em;
+  text-align:center;
+  background:#fff;
+  margin-top: auto;
+}
+
+/* ── DATASET SCHEMA — card strip, no table ── */
+.schema-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.18em;
+  margin-top: 0.2em;
+  font-size: 0.68em;
+  max-width: 100%;
+  overflow: hidden;
+}
+.schema-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4em;
+  padding: 0.22em 0.38em;
+  border-radius: 0.28em;
+  border-left: 0.22em solid #E97132;
+  background: rgba(233,113,50,0.04);
+}
+.schema-row:nth-child(even) { background: rgba(21,71,52,0.03); border-left-color: #154734; }
+.s-name  { color: #154734; font-weight: bold; white-space: nowrap; min-width: 4.8em; flex-shrink: 0; }
+.s-keys  { color: #2d8a4e; font-family: monospace; font-size: 0.9em; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.s-scale { color: #E97132; font-weight: bold; white-space: nowrap; margin-left: auto; padding-left: 0.4em; flex-shrink: 0; }
+
+/* placeholder closed */
+
+/* ── ACTION MIX — horizontal stacked bar ── */
+.action-mix-wrap { width:100%; }
+.action-bar-row {
+  display:flex; align-items:center; gap:0.3em; margin-bottom:0.18em;
+}
+.action-label { font-size:0.62em; color:#333; font-weight:bold; width:5.5em; flex-shrink:0; text-align:right; }
+.action-bar-track {
+  flex:1; height:1.05em; background:rgba(21,71,52,0.08);
+  border-radius:0.18em; overflow:hidden; position:relative;
+}
+.action-bar-fill {
+  height:100%; border-radius:0.18em 0 0 0.18em;
+  position:absolute; left:0; top:0;
+  transition: width 0.3s ease;
+}
+.action-bar-fill.last { border-radius:0.18em; }
+.action-pct { font-size:0.62em; color:#555; width:2.8em; flex-shrink:0; }
+.action-mix-legend {
+  display:flex; flex-wrap:wrap; gap:0.28em 0.7em; margin-top:0.35em;
+}
+.aml-item { display:flex; align-items:center; gap:0.22em; font-size:0.6em; color:#555; }
+.aml-dot { width:0.75em; height:0.75em; border-radius:0.15em; flex-shrink:0; }
+
+/* ── STACKED SERIES CHART (replacing donut) ── */
+.series-stacked-wrap { width:100%; }
+
+/* ── EVENT BAR WRAP ── */
+.event-bar-wrap svg { width:100%; height:auto; display:block; }
+
+/* ── RESIZABLE BOXES ── */
+.col-left > *, .col-right > * { max-width: 100%; }
+.col-left svg, .col-right svg, .col-left img, .col-right img { max-width: 100%; }
+.resizable {
+  position: relative;
+  box-sizing: border-box;
+  min-width: 40px;
+  min-height: 20px;
+}
+.resizable .rh {
+  position: absolute;
+  z-index: 100;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.resizable:hover .rh,
+.resizable.resizing .rh { opacity: 1; }
+.rh.rh-l { left:-3px;  top:10%; height:80%; width:6px; cursor:ew-resize; }
+.rh.rh-r { right:-3px; top:10%; height:80%; width:6px; cursor:ew-resize; }
+.rh.rh-t { top:-3px;    left:10%; width:80%; height:6px; cursor:ns-resize; }
+.rh.rh-b { bottom:-3px; left:10%; width:80%; height:6px; cursor:ns-resize; }
+.rh.rh-tl { top:-4px; left:-4px;  width:10px; height:10px; cursor:nwse-resize; }
+.rh.rh-tr { top:-4px; right:-4px; width:10px; height:10px; cursor:nesw-resize; }
+.rh.rh-bl { bottom:-4px; left:-4px;  width:10px; height:10px; cursor:nesw-resize; }
+.rh.rh-br { bottom:-4px; right:-4px; width:10px; height:10px; cursor:nwse-resize; }
+.rh::after {
+  content: '';
+  position: absolute;
+  background: rgba(233,113,50,0.75);
+  border-radius: 50%;
+  inset: 1px;
+}
+.rh.rh-l::after, .rh.rh-r::after {
+  top: 50%; left: 50%;
+  width: 4px; height: 16px;
+  transform: translate(-50%, -50%);
+  border-radius: 2px;
+}
+.rh.rh-t::after, .rh.rh-b::after {
+  top: 50%; left: 50%;
+  width: 16px; height: 4px;
+  transform: translate(-50%, -50%);
+  border-radius: 2px;
+}
+.rh.rh-tl::after, .rh.rh-tr::after, .rh.rh-bl::after, .rh.rh-br::after {
+  width: 6px; height: 6px;
+  inset: 50%;
+  transform: translate(-50%, -50%);
+}
+</style>
+</head>
+<body>
+<div class="poster">
+
+<!-- ══════════════════════════════════════════
+     LEFT COLUMN
+══════════════════════════════════════════ -->
+<div class="col-left">
+
+  <div class="poster-title">Sokoban State Space Analysis:<br>AI Solver Performance &amp; Complexity</div>
+  <div class="poster-subtitle">AMOD 5610/5620Y Big Data Analytics — Final Deliverable</div>
+  <div class="author-row">
+    <svg class="author-icon" viewBox="0 0 28 28" fill="none">
+      <circle cx="14" cy="9" r="6" fill="#154734"/>
+      <ellipse cx="14" cy="22" rx="10" ry="5" fill="#154734"/>
+    </svg>
+    <span class="author-name">Saud Ahmed Abbasi &nbsp;(0843960)</span>
+  </div>
+
+  <!-- Introduction -->
+  <div>
+    <div class="sec-head">Introduction</div>
+    <div class="sec-body">
+      <p><strong>Sokoban</strong> is a classic puzzle game where a player pushes boxes on a grid to designated target locations — boxes can only be pushed (never pulled), making it a PSPACE-complete planning problem.</p>
+      <p>A Sokoban-style game built in Godot 4 with eight mechanics — including block duplication — also runs as a data pipeline. A Python solver reads CSV grid exports and sends each level to beam search or parallel priority-queue search across up to 9 threads.</p>
+      <p>The question: <strong>does an AI solver's own behaviour tell us more about puzzle complexity than the puzzle's structure does?</strong></p>
+    </div>
+  </div>
+
+  <!-- Research Questions -->
+  <div>
+    <div class="sec-head">Research Questions</div>
+    <div style="display:flex; flex-direction:column; gap:0.25em;">
+
+      <div class="rq-left-card" style="display:flex; align-items:stretch; gap:0; background:rgba(21,71,52,0.06); border:1px solid rgba(21,71,52,0.18); border-radius:0.3em; overflow:hidden;">
+        <div style="font-size:1.4em; font-weight:900; color:rgba(21,71,52,0.25); min-width:1.6em; display:flex; align-items:center; justify-content:center; padding:0.2em 0.28em; border-right:1px solid rgba(21,71,52,0.12); line-height:1; font-style:italic; flex-shrink:0;">1</div>
+        <div style="padding:0.3em 0.42em; flex:1; min-width:0;">
+          <div style="font-size:0.65em; color:#222; line-height:1.4; font-style:italic;">How do mechanics &amp; level design generate implicit complexity as a data-producing system?</div>
+        </div>
+      </div>
+
+      <div class="rq-left-card" style="display:flex; align-items:stretch; gap:0; background:rgba(21,71,52,0.06); border:1px solid rgba(21,71,52,0.18); border-radius:0.3em; overflow:hidden;">
+        <div style="font-size:1.4em; font-weight:900; color:rgba(21,71,52,0.25); min-width:1.6em; display:flex; align-items:center; justify-content:center; padding:0.2em 0.28em; border-right:1px solid rgba(21,71,52,0.12); line-height:1; font-style:italic; flex-shrink:0;">2</div>
+        <div style="padding:0.3em 0.42em; flex:1; min-width:0;">
+          <div style="font-size:0.65em; color:#222; line-height:1.4; font-style:italic;">What does structured gameplay data reveal about solver behaviour and difficulty?</div>
+        </div>
+      </div>
+
+      <div class="rq-left-card" style="display:flex; align-items:stretch; gap:0; background:rgba(21,71,52,0.06); border:1px solid rgba(21,71,52,0.18); border-radius:0.3em; overflow:hidden;">
+        <div style="font-size:1.4em; font-weight:900; color:rgba(21,71,52,0.25); min-width:1.6em; display:flex; align-items:center; justify-content:center; padding:0.2em 0.28em; border-right:1px solid rgba(21,71,52,0.12); line-height:1; font-style:italic; flex-shrink:0;">3</div>
+        <div style="padding:0.3em 0.42em; flex:1; min-width:0;">
+          <div style="font-size:0.65em; color:#222; line-height:1.4; font-style:italic;">How does mechanic complexity affect AI solver performance across levels?</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Method — responsive flowchart -->
+  <div>
+    <div class="sec-head">Method</div>
+    <div class="flow-wrap">
+      <svg viewBox="0 0 220 285" xmlns="http://www.w3.org/2000/svg" font-family="Arial,sans-serif">
+        <defs>
+          <marker id="arr" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L6,3 z" fill="#E97132"/>
+          </marker>
+          <clipPath id="clip-godot"><rect x="10" y="2" width="200" height="32"/></clipPath>
+          <clipPath id="clip-logger"><rect x="4" y="38" width="212" height="34"/></clipPath>
+          <clipPath id="clip-human"><rect x="4" y="83" width="96" height="32"/></clipPath>
+          <clipPath id="clip-csvs"><rect x="120" y="83" width="96" height="32"/></clipPath>
+          <clipPath id="clip-events"><rect x="4" y="123" width="96" height="32"/></clipPath>
+          <clipPath id="clip-solver"><rect x="120" y="123" width="96" height="32"/></clipPath>
+          <clipPath id="clip-aic"><rect x="120" y="163" width="96" height="32"/></clipPath>
+          <clipPath id="clip-dataset"><rect x="4" y="206" width="212" height="34"/></clipPath>
+        </defs>
+
+        <!-- Godot -->
+        <rect x="10" y="2" width="200" height="32" rx="3.5" fill="#154734"/>
+        <text x="110" y="15" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold" clip-path="url(#clip-godot)">Godot 4 / GDScript</text>
+        <text x="110" y="28" text-anchor="middle" font-size="8" fill="#a8d5b5" clip-path="url(#clip-godot)">35 levels → CSV grid export</text>
+
+        <line x1="110" y1="34" x2="110" y2="38" stroke="#E97132" stroke-width="1.4" marker-end="url(#arr)"/>
+
+        <!-- DataLogger -->
+        <rect x="4" y="38" width="212" height="34" rx="3.5" fill="#196B24"/>
+        <text x="110" y="52" text-anchor="middle" font-size="9.5" fill="#fff" font-weight="bold" clip-path="url(#clip-logger)">DataLogger (GDScript singleton)</text>
+        <text x="110" y="65" text-anchor="middle" font-size="7.5" fill="#c8f0d4" clip-path="url(#clip-logger)">persists across scenes · writes 5 CSV tables</text>
+
+        <!-- Fork lines -->
+        <line x1="110" y1="72" x2="110" y2="79" stroke="#E97132" stroke-width="1.4"/>
+        <line x1="52"  y1="79" x2="168" y2="79" stroke="#E97132" stroke-width="1.4"/>
+        <line x1="52"  y1="79" x2="52"  y2="83" stroke="#E97132" stroke-width="1.4" marker-end="url(#arr)"/>
+        <line x1="168" y1="79" x2="168" y2="83" stroke="#E97132" stroke-width="1.4" marker-end="url(#arr)"/>
+        <text x="82"  y="77.5" text-anchor="middle" font-size="6.5" fill="rgba(21,71,52,0.5)">human path</text>
+        <text x="142" y="77.5" text-anchor="middle" font-size="6.5" fill="rgba(21,71,52,0.5)">AI path</text>
+
+        <!-- Human Player -->
+        <rect x="4" y="83" width="96" height="32" rx="3" fill="#b3d9ec"/>
+        <text x="52" y="96" text-anchor="middle" font-size="9" fill="#154734" font-weight="bold" clip-path="url(#clip-human)">Human Player</text>
+        <text x="52" y="109" text-anchor="middle" font-size="7.5" fill="#2a6a8a" clip-path="url(#clip-human)">direct gameplay</text>
+
+        <!-- Level Grid CSVs -->
+        <rect x="120" y="83" width="96" height="32" rx="3" fill="#f5c08a"/>
+        <text x="168" y="96" text-anchor="middle" font-size="9" fill="#7a3800" font-weight="bold" clip-path="url(#clip-csvs)">Level Grid CSVs</text>
+        <text x="168" y="109" text-anchor="middle" font-size="7.5" fill="#7a3800" clip-path="url(#clip-csvs)">board state files</text>
+
+        <line x1="52"  y1="115" x2="52"  y2="123" stroke="#E97132" stroke-width="1.4" marker-end="url(#arr)"/>
+        <line x1="168" y1="115" x2="168" y2="123" stroke="#E97132" stroke-width="1.4" marker-end="url(#arr)"/>
+
+        <!-- Event CSV Records -->
+        <rect x="4" y="123" width="96" height="32" rx="3" fill="#b3d9ec"/>
+        <text x="52" y="136" text-anchor="middle" font-size="8.5" fill="#154734" font-weight="bold" clip-path="url(#clip-events)">Event CSV Records</text>
+        <text x="52" y="149" text-anchor="middle" font-size="7.5" fill="#2a6a8a" clip-path="url(#clip-events)">5 structured tables</text>
+
+        <!-- AI Python Solver -->
+        <rect x="120" y="123" width="96" height="32" rx="3" fill="#f5c08a"/>
+        <text x="168" y="136" text-anchor="middle" font-size="9" fill="#7a3800" font-weight="bold" clip-path="url(#clip-solver)">AI Python Solver</text>
+        <text x="168" y="149" text-anchor="middle" font-size="7.5" fill="#7a3800" clip-path="url(#clip-solver)">beam &amp; queue · 9 threads</text>
+
+        <line x1="168" y1="155" x2="168" y2="163" stroke="#E97132" stroke-width="1.4" marker-end="url(#arr)"/>
+
+        <!-- AIController -->
+        <rect x="120" y="163" width="96" height="32" rx="3" fill="#e8e0f8"/>
+        <text x="168" y="176" text-anchor="middle" font-size="9" fill="#3a2080" font-weight="bold" clip-path="url(#clip-aic)">AIController</text>
+        <text x="168" y="189" text-anchor="middle" font-size="7.5" fill="#5a4090" clip-path="url(#clip-aic)">replays solution in Godot</text>
+
+        <!-- Merge lines -->
+        <line x1="52"  y1="155" x2="52"  y2="198" stroke="#E97132" stroke-width="1.4"/>
+        <line x1="168" y1="195" x2="168" y2="198" stroke="#E97132" stroke-width="1.4"/>
+        <line x1="52"  y1="198" x2="168" y2="198" stroke="#E97132" stroke-width="1.4"/>
+        <text x="110" y="197" text-anchor="middle" font-size="6" fill="rgba(21,71,52,0.35)">— or —</text>
+        <line x1="110" y1="198" x2="110" y2="206" stroke="#E97132" stroke-width="1.4" marker-end="url(#arr)"/>
+
+        <!-- Structured Dataset -->
+        <rect x="4" y="206" width="212" height="34" rx="3.5" fill="#E97132"/>
+        <text x="110" y="220" text-anchor="middle" font-size="10" fill="#fff" font-weight="bold" clip-path="url(#clip-dataset)">Structured Analysis Dataset</text>
+        <text x="110" y="233" text-anchor="middle" font-size="7.5" fill="rgba(255,255,255,0.95)" clip-path="url(#clip-dataset)">sessions · levels · objects · events · dup_events</text>
+
+        <line x1="110" y1="240" x2="110" y2="250" stroke="#E97132" stroke-width="1.4" marker-end="url(#arr)"/>
+        <rect x="50" y="252" width="120" height="22" rx="3" fill="#196B24"/>
+        <text x="110" y="265" text-anchor="middle" font-size="7.8" fill="#fff" font-weight="bold" font-style="italic">Research Question Analysis</text>
+      </svg>
+    </div>
+  </div>
+
+</div><!-- col-left -->
+
+
+<!-- ══════════════════════════════════════════
+     CENTRE COLUMN
+══════════════════════════════════════════ -->
+<div class="col-mid">
+
+  <div class="group-badge">
+    <span class="lbl-g">GROUP</span>
+    <span class="lbl-n">A-12</span>
+  </div>
+
+  <div class="main-finding">
+    <p>Design a puzzle.<br>You won't know how hard it is until the AI breaks a sweat.</p>
+    <div class="sub-find">Two AI solvers across 35 levels show that object counts barely predict effort. What drove difficulty was how the AI played — duplication depth, board geometry, and search strategy left far stronger signals in the data than the level design ever did.</div>
+  </div>
+
+  <!-- RQ Cards moved to left column -->
+  <!-- Key Insights table in centre -->
+  <div class="ki-wrap" style="background:#0d2b1e; border:1px solid #2d8a4e; border-radius:0.4em; padding:0.45em 0.5em;">
+    <div class="rq-header" style="margin-bottom:0.28em;">Key Insights</div>
+    <div style="display:flex; flex-direction:column; gap:0.26em;">
+      <div class="ki-card" style="display:flex; align-items:stretch; gap:0; background:#154734; border:1px solid #2d8a4e; border-radius:0.3em; overflow:hidden;">
+        <div style="min-width:2.2em; display:flex; align-items:center; justify-content:center; padding:0.3em 0.28em; border-right:1px solid #196B24; flex-shrink:0;">
+          <!-- scatter/regression icon -->
+          <svg viewBox="0 0 20 20" width="1.5em" height="1.5em"><circle cx="5" cy="15" r="1.5" fill="#a8d5b5"/><circle cx="7" cy="12" r="1.5" fill="#a8d5b5"/><circle cx="10" cy="13" r="1.5" fill="#a8d5b5"/><circle cx="13" cy="10" r="1.5" fill="#a8d5b5"/><circle cx="16" cy="9" r="1.5" fill="#a8d5b5"/><line x1="3" y1="17" x2="18" y2="7" stroke="#f5b87a" stroke-width="1.2" stroke-dasharray="2,1.5"/></svg>
+        </div>
+        <div style="padding:0.3em 0.42em; display:flex; flex-direction:column; gap:0.14em; flex:1; min-width:0;">
+          <div style="font-size:0.67em; color:#fff; line-height:1.35; font-weight:bold;">Puzzle structure barely predicts AI effort</div>
+          <div style="height:1px; background:#196B24;"></div>
+          <div style="font-size:0.63em; color:#a8d5b5; line-height:1.38;">OLS regression: block &amp; button counts explain only <strong style="color:#fff;">4%</strong> of effort variance (R²=0.031, p=0.31). Layout geometry dominates.</div>
+        </div>
+      </div>
+      <div class="ki-card" style="display:flex; align-items:stretch; gap:0; background:#154734; border:1px solid #2d8a4e; border-radius:0.3em; overflow:hidden;">
+        <div style="min-width:2.2em; display:flex; align-items:center; justify-content:center; padding:0.3em 0.28em; border-right:1px solid #196B24; flex-shrink:0;">
+          <!-- bar chart / effort icon -->
+          <svg viewBox="0 0 20 20" width="1.5em" height="1.5em"><rect x="3" y="11" width="3" height="7" rx="0.5" fill="#a8d5b5"/><rect x="8" y="7" width="3" height="11" rx="0.5" fill="#a8d5b5" opacity=".75"/><rect x="13" y="3" width="3" height="15" rx="0.5" fill="#f5b87a"/><line x1="2" y1="18" x2="18" y2="18" stroke="rgba(255,255,255,0.3)" stroke-width="0.8"/></svg>
+        </div>
+        <div style="padding:0.3em 0.42em; display:flex; flex-direction:column; gap:0.14em; flex:1; min-width:0;">
+          <div style="font-size:0.67em; color:#fff; line-height:1.35; font-weight:bold;">Solver behaviour is a far stronger signal</div>
+          <div style="height:1px; background:#196B24;"></div>
+          <div style="font-size:0.63em; color:#a8d5b5; line-height:1.38;">Action mix, RESET rate &amp; duplication depth outpredict level structure. B011 (1 block, 1 button) took <strong style="color:#fff;">3,135 actions</strong> — the hardest level by effort.</div>
+        </div>
+      </div>
+      <div class="ki-card" style="display:flex; align-items:stretch; gap:0; background:#154734; border:1px solid #2d8a4e; border-radius:0.3em; overflow:hidden;">
+        <div style="min-width:2.2em; display:flex; align-items:center; justify-content:center; padding:0.3em 0.28em; border-right:1px solid #196B24; flex-shrink:0;">
+          <!-- duplication / branching icon matching mech style -->
+          <svg viewBox="0 0 20 20" width="1.5em" height="1.5em"><circle cx="5" cy="10" r="3" fill="#a8d5b5"/><circle cx="15" cy="5" r="2" fill="#a8d5b5" opacity=".7"/><circle cx="15" cy="15" r="2" fill="#a8d5b5" opacity=".7"/><path d="M8 10l5-5M8 10l5 5" stroke="#a8d5b5" stroke-width="1" fill="none"/></svg>
+        </div>
+        <div style="padding:0.3em 0.42em; display:flex; flex-direction:column; gap:0.14em; flex:1; min-width:0;">
+          <div style="font-size:0.67em; color:#fff; line-height:1.35; font-weight:bold;">Duplication depth: non-linear preference</div>
+          <div style="height:1px; background:#196B24;"></div>
+          <div style="font-size:0.63em; color:#a8d5b5; line-height:1.38;">Solver strongly favoured originals &amp; 1st-gen copies (~3.82 Δ at R=1). Deeper blocks land in tighter positions with fewer valid cells.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Puzzle Mechanics — visual node grid -->
+  <div class="mech-head">Puzzle Mechanics — 8 Types</div>
+  <div class="mech-grid">
+    <div class="mech-node highlight">
+      <svg class="mech-icon" viewBox="0 0 20 20" width="1.9em" height="1.9em"><rect x="2" y="7" width="7" height="7" rx="1.5" fill="#f5b87a"/><rect x="11" y="7" width="7" height="7" rx="1.5" fill="#f5b87a" opacity=".5"/><path d="M9 10.5h2M9.5 9l1.5 1.5L9.5 12" stroke="#f5b87a" stroke-width="1.2" fill="none"/></svg>
+      <span class="mech-name">Block Pushing</span>
+      <span class="mech-desc">PSPACE-complete core</span>
+    </div>
+    <div class="mech-node highlight">
+      <svg class="mech-icon" viewBox="0 0 20 20" width="1.9em" height="1.9em"><path d="M3 10h10M17 10l-4-3v6l4-3z" stroke="#f5b87a" stroke-width="1.5" fill="none"/><circle cx="3" cy="10" r="2" fill="#f5b87a"/></svg>
+      <span class="mech-name">Charged Push</span>
+      <span class="mech-desc">Directional force modifier</span>
+    </div>
+    <div class="mech-node highlight">
+      <svg class="mech-icon" viewBox="0 0 20 20" width="1.9em" height="1.9em"><circle cx="6" cy="10" r="3" fill="#f5b87a"/><circle cx="14" cy="7" r="2" fill="#f5b87a" opacity=".7"/><circle cx="14" cy="13" r="2" fill="#f5b87a" opacity=".7"/><path d="M9 10l3-3M9 10l3 3" stroke="#f5b87a" stroke-width="1" fill="none"/></svg>
+      <span class="mech-name">Duplication Shot</span>
+      <span class="mech-desc">Up to 4 copies at radius r</span>
+    </div>
+    <div class="mech-node highlight">
+      <svg class="mech-icon" viewBox="0 0 20 20" width="1.9em" height="1.9em"><circle cx="6" cy="10" r="3" fill="#f5b87a"/><circle cx="16" cy="6" r="1.5" fill="#f5b87a" opacity=".6"/><circle cx="16" cy="10" r="1.5" fill="#f5b87a" opacity=".6"/><circle cx="16" cy="14" r="1.5" fill="#f5b87a" opacity=".6"/><circle cx="13" cy="4" r="1.5" fill="#f5b87a" opacity=".4"/><circle cx="13" cy="16" r="1.5" fill="#f5b87a" opacity=".4"/><path d="M9 10h3" stroke="#f5b87a" stroke-width="1" fill="none"/></svg>
+      <span class="mech-name">Charged Dup.</span>
+      <span class="mech-desc">Wider radius variant</span>
+    </div>
+    <div class="mech-node" style="background:#0d2b1e; border-color:#2d8a4e;">
+      <svg class="mech-icon" viewBox="0 0 20 20" width="1.9em" height="1.9em"><rect x="2" y="12" width="16" height="6" rx="1" fill="#2d8a4e"/><rect x="2" y="2" width="16" height="8" rx="1" fill="#154734" stroke="#2d8a4e" stroke-width="0.8"/><path d="M7 6l3 3 3-3" stroke="#a8d5b5" stroke-width="1.2" fill="none"/></svg>
+      <span class="mech-name">Floor-Fill (FB)</span>
+      <span class="mech-desc">Fills hole tiles with floor</span>
+    </div>
+    <div class="mech-node" style="background:#0d2b1e; border-color:#2d8a4e;">
+      <svg class="mech-icon" viewBox="0 0 20 20" width="1.9em" height="1.9em"><rect x="2" y="2" width="16" height="16" rx="1" fill="#154734" stroke="#2d8a4e" stroke-width="0.8"/><circle cx="10" cy="10" r="4" fill="#071a10" stroke="#2d8a4e" stroke-width="0.8"/></svg>
+      <span class="mech-name">Hole-Blocks (HB)</span>
+      <span class="mech-desc">Punches holes in floor</span>
+    </div>
+    <div class="mech-node" style="background:#0a2218; border-color:#196B24;">
+      <svg class="mech-icon" viewBox="0 0 20 20" width="1.9em" height="1.9em"><rect x="2" y="7" width="7" height="6" rx="1" fill="#196B24" stroke="#4aaa74" stroke-width="0.8"/><rect x="11" y="7" width="7" height="6" rx="1" fill="#196B24" stroke="#4aaa74" stroke-width="0.8"/><path d="M9.5 10l1 0M10 9l-1 1 1 1" stroke="#a8d5b5" stroke-width="1.1" fill="none"/></svg>
+      <span class="mech-name" style="color:#a8d5b5;">Switchables</span>
+      <span class="mech-desc" style="color:rgba(168,213,181,0.65);">Toggle object interactions</span>
+    </div>
+    <div class="mech-node" style="background:#0a2218; border-color:#196B24;">
+      <svg class="mech-icon" viewBox="0 0 20 20" width="1.9em" height="1.9em"><rect x="1" y="5" width="18" height="10" rx="1" fill="#196B24" stroke="#4aaa74" stroke-width="0.8"/><line x1="7" y1="5" x2="7" y2="15" stroke="rgba(168,213,181,0.4)" stroke-width="0.6"/><line x1="13" y1="5" x2="13" y2="15" stroke="rgba(168,213,181,0.4)" stroke-width="0.6"/><path d="M14 10l3-2v4l-3-2z" fill="#a8d5b5" opacity=".9"/></svg>
+      <span class="mech-name" style="color:#a8d5b5;">Map Movers</span>
+      <span class="mech-desc" style="color:rgba(168,213,181,0.65);">Shift entire tile regions</span>
+    </div>
+  </div>
+
+  <!-- Solver panels -->
+  <div class="solver-head">AI Solver Design — Two Strategies</div>
+  <div class="solver-panels">
+
+    <div class="solver-panel beam">
+      <div class="sp-name">Beam Search</div>
+      <!-- mechanic icons row: Block Pushing, Charged Push, Duplication Shot, Charged Dup. -->
+      <div style="display:flex; gap:0.28em; align-items:center; flex-wrap:wrap; margin-bottom:0.05em;">
+        <svg viewBox="0 0 20 20" width="1.4em" height="1.4em" title="Block Pushing"><rect x="2" y="7" width="7" height="7" rx="1.5" fill="#f5b87a"/><rect x="11" y="7" width="7" height="7" rx="1.5" fill="#f5b87a" opacity=".5"/><path d="M9 10.5h2M9.5 9l1.5 1.5L9.5 12" stroke="#f5b87a" stroke-width="1.2" fill="none"/></svg>
+        <svg viewBox="0 0 20 20" width="1.4em" height="1.4em" title="Charged Push"><path d="M3 10h10M17 10l-4-3v6l4-3z" stroke="#f5b87a" stroke-width="1.5" fill="none"/><circle cx="3" cy="10" r="2" fill="#f5b87a"/></svg>
+        <svg viewBox="0 0 20 20" width="1.4em" height="1.4em" title="Duplication Shot"><circle cx="6" cy="10" r="3" fill="#f5b87a"/><circle cx="14" cy="7" r="2" fill="#f5b87a" opacity=".7"/><circle cx="14" cy="13" r="2" fill="#f5b87a" opacity=".7"/><path d="M9 10l3-3M9 10l3 3" stroke="#f5b87a" stroke-width="1" fill="none"/></svg>
+        <svg viewBox="0 0 20 20" width="1.4em" height="1.4em" title="Charged Dup."><circle cx="6" cy="10" r="3" fill="#f5b87a"/><circle cx="16" cy="6" r="1.5" fill="#f5b87a" opacity=".6"/><circle cx="16" cy="10" r="1.5" fill="#f5b87a" opacity=".6"/><circle cx="16" cy="14" r="1.5" fill="#f5b87a" opacity=".6"/><circle cx="13" cy="4" r="1.5" fill="#f5b87a" opacity=".4"/><circle cx="13" cy="16" r="1.5" fill="#f5b87a" opacity=".4"/><path d="M9 10h3" stroke="#f5b87a" stroke-width="1" fill="none"/></svg>
+      </div>
+      <div class="sp-tag">B-World — standard blocks &amp; buttons</div>
+      <div class="sp-body">Keeps a ranked shortlist of the most promising board states and drops the rest. When it runs dry, the shortlist grows and the search restarts.</div>
+      <div class="beam-bars">
+        <div class="beam-bar" style="height:1.0em;opacity:.5;"><span>10</span></div>
+        <div class="beam-bar" style="height:1.45em;opacity:.65;"><span>25</span></div>
+        <div class="beam-bar" style="height:2.0em;opacity:.8;"><span>50</span></div>
+        <div class="beam-bar" style="height:2.55em;opacity:.95;"><span>100</span></div>
+        <span class="beam-label">← shortlist size per retry</span>
+      </div>
+      <div class="sp-score"><strong>Score:</strong> button coverage + dup reach + label match − wall-trap penalty</div>
+    </div>
+
+    <div class="solver-panel pq">
+      <div class="sp-name">Parallel Priority Queue</div>
+      <!-- mechanic icons row: all 6 mechanics -->
+      <div style="display:flex; gap:0.28em; align-items:center; flex-wrap:wrap; margin-bottom:0.05em;">
+        <svg viewBox="0 0 20 20" width="1.4em" height="1.4em" title="Block Pushing"><rect x="2" y="7" width="7" height="7" rx="1.5" fill="#f5b87a"/><rect x="11" y="7" width="7" height="7" rx="1.5" fill="#f5b87a" opacity=".5"/><path d="M9 10.5h2M9.5 9l1.5 1.5L9.5 12" stroke="#f5b87a" stroke-width="1.2" fill="none"/></svg>
+        <svg viewBox="0 0 20 20" width="1.4em" height="1.4em" title="Charged Push"><path d="M3 10h10M17 10l-4-3v6l4-3z" stroke="#f5b87a" stroke-width="1.5" fill="none"/><circle cx="3" cy="10" r="2" fill="#f5b87a"/></svg>
+        <svg viewBox="0 0 20 20" width="1.4em" height="1.4em" title="Duplication Shot"><circle cx="6" cy="10" r="3" fill="#f5b87a"/><circle cx="14" cy="7" r="2" fill="#f5b87a" opacity=".7"/><circle cx="14" cy="13" r="2" fill="#f5b87a" opacity=".7"/><path d="M9 10l3-3M9 10l3 3" stroke="#f5b87a" stroke-width="1" fill="none"/></svg>
+        <svg viewBox="0 0 20 20" width="1.4em" height="1.4em" title="Charged Dup."><circle cx="6" cy="10" r="3" fill="#f5b87a"/><circle cx="16" cy="6" r="1.5" fill="#f5b87a" opacity=".6"/><circle cx="16" cy="10" r="1.5" fill="#f5b87a" opacity=".6"/><circle cx="16" cy="14" r="1.5" fill="#f5b87a" opacity=".6"/><circle cx="13" cy="4" r="1.5" fill="#f5b87a" opacity=".4"/><circle cx="13" cy="16" r="1.5" fill="#f5b87a" opacity=".4"/><path d="M9 10h3" stroke="#f5b87a" stroke-width="1" fill="none"/></svg>
+        <svg viewBox="0 0 20 20" width="1.4em" height="1.4em" title="Floor-Fill (FB)"><rect x="2" y="12" width="16" height="6" rx="1" fill="#2d8a4e"/><rect x="2" y="2" width="16" height="8" rx="1" fill="#154734" stroke="#2d8a4e" stroke-width="0.8"/><path d="M7 6l3 3 3-3" stroke="#a8d5b5" stroke-width="1.2" fill="none"/></svg>
+        <svg viewBox="0 0 20 20" width="1.4em" height="1.4em" title="Hole-Blocks (HB)"><rect x="2" y="2" width="16" height="16" rx="1" fill="#154734" stroke="#2d8a4e" stroke-width="0.8"/><circle cx="10" cy="10" r="4" fill="#071a10" stroke="#2d8a4e" stroke-width="0.8"/></svg>
+      </div>
+      <div class="sp-tag">FB / HB / Mixed — floor-fill &amp; hole-blocks</div>
+      <div class="sp-body"><strong>9 threads</strong>, each seeded with a different opening move. They share one global state counter — first to find a solution stops the rest.</div>
+      <div class="thread-grid">
+        <div class="t-cell"><span class="t-dir">&#9737;</span><span class="t-lbl">none</span></div>
+        <div class="t-cell"><span class="t-dir">&#8593;</span><span class="t-lbl">U</span></div>
+        <div class="t-cell"><span class="t-dir">&#8595;</span><span class="t-lbl">D</span></div>
+        <div class="t-cell"><span class="t-dir">&#8592;</span><span class="t-lbl">L</span></div>
+        <div class="t-cell"><span class="t-dir">&#8594;</span><span class="t-lbl">R</span></div>
+        <div class="t-cell"><span class="t-dir">&#8593;&#8594;</span><span class="t-lbl">U+R</span></div>
+        <div class="t-cell"><span class="t-dir">&#8593;&#8592;</span><span class="t-lbl">U+L</span></div>
+        <div class="t-cell"><span class="t-dir">&#8595;&#8594;</span><span class="t-lbl">D+R</span></div>
+        <div class="t-cell"><span class="t-dir">&#8595;&#8592;</span><span class="t-lbl">D+L</span></div>
+      </div>
+      <div class="sp-score">Shared 10M-state budget. Best partial path saved if unsolved.</div>
+    </div>
+
+  </div>
+
+</div><!-- col-mid -->
+
+
+<!-- ══════════════════════════════════════════
+     RIGHT COLUMN — ALL GRAPHS
+══════════════════════════════════════════ -->
+<div class="col-right">
+
+  <!-- Trent University Logo -->
+  <div class="logo-box">
+    <img src="https://www.trentu.ca/communicationsenrolment/sites/trentu.ca.communicationsenrolment/files/ptbo%20logo_0.JPG"
+         alt="Trent University"
+         style="width:100%; height:auto; display:block; object-fit:contain; max-height:5em;"
+         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';" />
+    <span style="display:none; font-size:0.66em; color:#154734; font-style:italic; opacity:0.6;">Trent University</span>
+  </div>
+
+  <!-- Dataset & Logging Schema — clean table, no emoji -->
+  <div>
+    <div class="sec-head">Dataset &amp; Logging Schema</div>
+    <div class="sec-body" style="margin-bottom:0.3em;">
+      <p><strong>35 levels</strong> (29 B-series, 3 C, 3 D) across 22 AI sessions. The solver spawned ~4,100 blocks via duplication — above the 1.58 placed per level on average. Max depth: 20 generations. All data synthetic and deterministic.</p>
+    </div>
+    <div class="schema-strip">
+      <div class="schema-row"><span class="s-name">sessions</span><span class="s-keys">session_id, solver_type, levels_completed, time_s</span><span class="s-scale">22 rows</span></div>
+      <div class="schema-row"><span class="s-name">levels</span><span class="s-keys">level_id, series, grid_w, grid_h, n_blocks, n_buttons</span><span class="s-scale">35 rows</span></div>
+      <div class="schema-row"><span class="s-name">objects</span><span class="s-keys">object_id, level_id, parent_id, spawn_depth, type</span><span class="s-scale">~4,100</span></div>
+      <div class="schema-row"><span class="s-name">events</span><span class="s-keys">event_id, session_id, action, pos_x, pos_y, direction</span><span class="s-scale">~18,000</span></div>
+      <div class="schema-row"><span class="s-name">dup_events</span><span class="s-keys">dup_id, object_id, radius, branching_delta, depth</span><span class="s-scale">~4,100</span></div>
+    </div>
+  </div>
+
+  <!-- RQ1 Charts -->
+  <div>
+    <div class="sec-head">RQ1 — Duplication Analysis</div>
+    <div class="side-viz-stack">
+
+      <div class="side-viz-card">
+        <div class="side-vc-title">Branching &Delta; by Radius</div>
+        <svg viewBox="0 0 96 108" xmlns="http://www.w3.org/2000/svg" font-family="Arial,sans-serif">
+          <line x1="22" y1="6" x2="22" y2="80" stroke="rgba(21,71,52,0.4)" stroke-width="0.9"/>
+          <line x1="22" y1="80" x2="90" y2="80" stroke="rgba(21,71,52,0.4)" stroke-width="0.9"/>
+          <line x1="20" y1="80" x2="22" y2="80" stroke="rgba(21,71,52,0.3)" stroke-width="0.7"/>
+          <line x1="20" y1="57" x2="22" y2="57" stroke="rgba(21,71,52,0.3)" stroke-width="0.7"/>
+          <line x1="20" y1="33" x2="22" y2="33" stroke="rgba(21,71,52,0.3)" stroke-width="0.7"/>
+          <line x1="20" y1="10" x2="22" y2="10" stroke="rgba(21,71,52,0.3)" stroke-width="0.7"/>
+          <text x="19" y="83"  text-anchor="end" font-size="6.5" fill="#555">3.0</text>
+          <text x="19" y="60"  text-anchor="end" font-size="6.5" fill="#555">3.3</text>
+          <text x="19" y="36"  text-anchor="end" font-size="6.5" fill="#555">3.6</text>
+          <text x="19" y="13"  text-anchor="end" font-size="6.5" fill="#555">4.0</text>
+          <text x="5" y="43" text-anchor="middle" font-size="6.5" fill="#666" transform="rotate(-90,5,43)">Branching &#916;</text>
+          <rect x="28" y="23" width="16" height="57" fill="#196B24" rx="2"/>
+          <text x="36" y="20" text-anchor="middle" font-size="8.5" fill="#196B24" font-weight="bold">3.82</text>
+          <rect x="50" y="43" width="16" height="37" fill="#2d8a4e" rx="2" opacity=".82"/>
+          <text x="58" y="40" text-anchor="middle" font-size="8.5" fill="#2d8a4e" font-weight="bold">3.53</text>
+          <rect x="72" y="47" width="16" height="33" fill="#4aaa74" rx="2" opacity=".65"/>
+          <text x="80" y="44" text-anchor="middle" font-size="8.5" fill="#4aaa74" font-weight="bold">3.47</text>
+          <text x="36" y="88" text-anchor="middle" font-size="8" fill="#333">R=1</text>
+          <text x="58" y="88" text-anchor="middle" font-size="8" fill="#333">R=2</text>
+          <text x="80" y="88" text-anchor="middle" font-size="8" fill="#333">R=3</text>
+          <text x="56" y="96" text-anchor="middle" font-size="7" fill="#777">Duplication Radius</text>
+          <text x="56" y="104" text-anchor="middle" font-size="6.5" fill="#999">Kruskal-Wallis p&lt;0.0001</text>
+        </svg>
+        <div class="side-vc-desc">Wider radius hits more walls — each step cuts how many new objects actually land. <strong>Kruskal-Wallis</strong> test: all three radius groups produce statistically distinct branching counts.</div>
+      </div>
+
+      <div class="side-viz-card">
+        <div class="side-vc-title">Dup. Depth Preference</div>
+        <svg viewBox="0 0 96 108" xmlns="http://www.w3.org/2000/svg" font-family="Arial,sans-serif">
+          <line x1="22" y1="6" x2="22" y2="80" stroke="rgba(21,71,52,0.4)" stroke-width="0.9"/>
+          <line x1="22" y1="80" x2="90" y2="80" stroke="rgba(21,71,52,0.4)" stroke-width="0.9"/>
+          <line x1="20" y1="80" x2="22" y2="80" stroke="rgba(21,71,52,0.3)" stroke-width="0.7"/>
+          <line x1="20" y1="50" x2="22" y2="50" stroke="rgba(21,71,52,0.3)" stroke-width="0.7"/>
+          <line x1="20" y1="21" x2="22" y2="21" stroke="rgba(21,71,52,0.3)" stroke-width="0.7"/>
+          <text x="19" y="83"  text-anchor="end" font-size="6.5" fill="#555">0</text>
+          <text x="19" y="53"  text-anchor="end" font-size="6.5" fill="#555">100</text>
+          <text x="19" y="24"  text-anchor="end" font-size="6.5" fill="#555">200</text>
+          <text x="5" y="43" text-anchor="middle" font-size="6.5" fill="#666" transform="rotate(-90,5,43)">Count</text>
+          <rect x="24" y="9"  width="9" height="71" fill="#c8860a" rx="1.5"/>
+          <rect x="35" y="20" width="9" height="60" fill="#c8860a" rx="1.5" opacity=".82"/>
+          <rect x="46" y="34" width="9" height="46" fill="#c8860a" rx="1.5" opacity=".66"/>
+          <rect x="57" y="39" width="9" height="41" fill="#c8860a" rx="1.5" opacity=".5"/>
+          <rect x="68" y="47" width="9" height="33" fill="#c8860a" rx="1.5" opacity=".38"/>
+          <rect x="79" y="62" width="9" height="18" fill="#c8860a" rx="1.5" opacity=".28"/>
+          <text x="24" y="7" font-size="7.5" fill="#b07000" font-weight="bold">241*</text>
+          <text x="28" y="88" text-anchor="middle" font-size="7.5" fill="#333">0</text>
+          <text x="39" y="88" text-anchor="middle" font-size="7.5" fill="#333">1</text>
+          <text x="50" y="88" text-anchor="middle" font-size="7.5" fill="#333">2</text>
+          <text x="61" y="88" text-anchor="middle" font-size="7.5" fill="#333">3</text>
+          <text x="72" y="88" text-anchor="middle" font-size="7.5" fill="#333">4</text>
+          <text x="83" y="88" text-anchor="middle" font-size="7.5" fill="#333">5+</text>
+          <text x="56" y="96" text-anchor="middle" font-size="7" fill="#777">Depth (0 = original block)</text>
+          <text x="56" y="104" text-anchor="middle" font-size="6.5" fill="#999">Chi-square p&lt;0.0001</text>
+        </svg>
+        <div class="side-vc-desc">Solver strongly favoured originals and 1st-gen copies. <strong>Chi-square</strong> test confirms this is a genuine preference, not random — deeper blocks sit in tighter board positions with fewer valid landing cells.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RQ2+RQ3 Charts -->
+  <div style="flex:1;">
+    <div class="sec-head">RQ2 &amp; RQ3 — Effort Analysis</div>
+    <div class="side-viz-stack">
+
+      <div class="side-viz-card">
+        <div class="side-vc-title">Effort by Series</div>
+        <svg viewBox="0 0 96 108" xmlns="http://www.w3.org/2000/svg" font-family="Arial,sans-serif">
+          <line x1="22" y1="6" x2="22" y2="80" stroke="rgba(21,71,52,0.4)" stroke-width="0.9"/>
+          <line x1="22" y1="80" x2="90" y2="80" stroke="rgba(21,71,52,0.4)" stroke-width="0.9"/>
+          <line x1="20" y1="80" x2="22" y2="80" stroke="rgba(21,71,52,0.3)" stroke-width="0.7"/>
+          <line x1="20" y1="59" x2="22" y2="59" stroke="rgba(21,71,52,0.3)" stroke-width="0.7"/>
+          <line x1="20" y1="38" x2="22" y2="38" stroke="rgba(21,71,52,0.3)" stroke-width="0.7"/>
+          <line x1="20" y1="17" x2="22" y2="17" stroke="rgba(21,71,52,0.3)" stroke-width="0.7"/>
+          <text x="19" y="83"  text-anchor="end" font-size="6.5" fill="#555">0</text>
+          <text x="19" y="62"  text-anchor="end" font-size="6.5" fill="#555">1k</text>
+          <text x="19" y="41"  text-anchor="end" font-size="6.5" fill="#555">2k</text>
+          <text x="19" y="20"  text-anchor="end" font-size="6.5" fill="#555">3k</text>
+          <text x="5" y="43" text-anchor="middle" font-size="6.5" fill="#666" transform="rotate(-90,5,43)">Total Events</text>
+          <line x1="28" y1="59" x2="48" y2="59" stroke="#76b7b2" stroke-width="1.5"/>
+          <circle cx="38" cy="79" r="2.5" fill="#4E79A7" opacity=".75"/>
+          <circle cx="33" cy="74" r="2.5" fill="#4E79A7" opacity=".75"/>
+          <circle cx="43" cy="71" r="2.5" fill="#4E79A7" opacity=".75"/>
+          <circle cx="36" cy="66" r="2.5" fill="#4E79A7" opacity=".75"/>
+          <circle cx="41" cy="62" r="2.5" fill="#4E79A7" opacity=".75"/>
+          <circle cx="34" cy="59" r="2.5" fill="#4E79A7" opacity=".75"/>
+          <circle cx="38" cy="14" r="3.5" fill="#E15759" opacity=".9"/>
+          <text x="44" y="12" font-size="7.5" fill="#E15759" font-weight="bold">B011!</text>
+          <line x1="56" y1="67" x2="68" y2="67" stroke="#76b7b2" stroke-width="1.5"/>
+          <circle cx="60" cy="76" r="2.5" fill="#F28E2B" opacity=".75"/>
+          <circle cx="64" cy="70" r="2.5" fill="#F28E2B" opacity=".75"/>
+          <circle cx="62" cy="66" r="2.5" fill="#F28E2B" opacity=".75"/>
+          <line x1="74" y1="72" x2="86" y2="72" stroke="#76b7b2" stroke-width="1.5"/>
+          <circle cx="78" cy="78" r="2.5" fill="#59A14F" opacity=".75"/>
+          <circle cx="82" cy="74" r="2.5" fill="#59A14F" opacity=".75"/>
+          <circle cx="80" cy="71" r="2.5" fill="#59A14F" opacity=".75"/>
+          <text x="38" y="88" text-anchor="middle" font-size="9" fill="#4E79A7" font-weight="bold">B</text>
+          <text x="62" y="88" text-anchor="middle" font-size="9" fill="#F28E2B" font-weight="bold">C</text>
+          <text x="80" y="88" text-anchor="middle" font-size="9" fill="#59A14F" font-weight="bold">D</text>
+          <text x="56" y="96" text-anchor="middle" font-size="7" fill="#777">Design Series</text>
+          <text x="56" y="104" text-anchor="middle" font-size="6.5" fill="#999">Kruskal-Wallis p=0.026</text>
+        </svg>
+        <div class="side-vc-desc">B-series difficulty lives in variance, not medians — B011 took 3,135 actions on a proxy score of just 4. <strong>Kruskal-Wallis</strong> test: the three series have statistically different effort distributions.</div>
+      </div>
+
+      <div class="side-viz-card">
+        <div class="side-vc-title">Proxy vs. Effort</div>
+        <svg viewBox="0 0 96 108" xmlns="http://www.w3.org/2000/svg" font-family="Arial,sans-serif">
+          <line x1="22" y1="6" x2="22" y2="80" stroke="rgba(21,71,52,0.4)" stroke-width="0.9"/>
+          <line x1="22" y1="80" x2="90" y2="80" stroke="rgba(21,71,52,0.4)" stroke-width="0.9"/>
+          <line x1="20" y1="80" x2="22" y2="80" stroke="rgba(21,71,52,0.3)" stroke-width="0.7"/>
+          <line x1="20" y1="59" x2="22" y2="59" stroke="rgba(21,71,52,0.3)" stroke-width="0.7"/>
+          <line x1="20" y1="38" x2="22" y2="38" stroke="rgba(21,71,52,0.3)" stroke-width="0.7"/>
+          <line x1="20" y1="17" x2="22" y2="17" stroke="rgba(21,71,52,0.3)" stroke-width="0.7"/>
+          <text x="19" y="83"  text-anchor="end" font-size="6.5" fill="#555">0</text>
+          <text x="19" y="62"  text-anchor="end" font-size="6.5" fill="#555">1k</text>
+          <text x="19" y="41"  text-anchor="end" font-size="6.5" fill="#555">2k</text>
+          <text x="19" y="20"  text-anchor="end" font-size="6.5" fill="#555">3k</text>
+          <text x="5" y="43" text-anchor="middle" font-size="6.5" fill="#666" transform="rotate(-90,5,43)">Total Events</text>
+          <line x1="39" y1="80" x2="39" y2="82" stroke="rgba(21,71,52,0.3)" stroke-width="0.7"/>
+          <line x1="55" y1="80" x2="55" y2="82" stroke="rgba(21,71,52,0.3)" stroke-width="0.7"/>
+          <line x1="72" y1="80" x2="72" y2="82" stroke="rgba(21,71,52,0.3)" stroke-width="0.7"/>
+          <text x="22" y="87"  text-anchor="middle" font-size="6.5" fill="#555">0</text>
+          <text x="39" y="87"  text-anchor="middle" font-size="6.5" fill="#555">4</text>
+          <text x="55" y="87"  text-anchor="middle" font-size="6.5" fill="#555">8</text>
+          <text x="72" y="87"  text-anchor="middle" font-size="6.5" fill="#555">12</text>
+          <line x1="22" y1="75" x2="88" y2="69" stroke="#E15759" stroke-width="1.2" stroke-dasharray="3,2" opacity=".75"/>
+          <circle cx="26" cy="77" r="2.2" fill="rgba(60,120,200,0.55)"/>
+          <circle cx="26" cy="73" r="2.2" fill="rgba(60,120,200,0.55)"/>
+          <circle cx="30" cy="79" r="2.2" fill="rgba(60,120,200,0.55)"/>
+          <circle cx="30" cy="75" r="2.2" fill="rgba(60,120,200,0.55)"/>
+          <circle cx="30" cy="65" r="2.2" fill="rgba(60,120,200,0.55)"/>
+          <circle cx="34" cy="77" r="2.2" fill="rgba(60,120,200,0.55)"/>
+          <circle cx="34" cy="70" r="2.2" fill="rgba(60,120,200,0.55)"/>
+          <circle cx="39" cy="75" r="2.2" fill="rgba(60,120,200,0.55)"/>
+          <circle cx="39" cy="44" r="2.2" fill="rgba(60,120,200,0.55)"/>
+          <circle cx="43" cy="79" r="2.2" fill="rgba(60,120,200,0.55)"/>
+          <circle cx="39" cy="14" r="3" fill="#E15759" opacity=".9"/>
+          <text x="43" y="13" font-size="7.5" fill="#E15759">B011</text>
+          <circle cx="52" cy="76" r="2.2" fill="rgba(60,120,200,0.55)"/>
+          <circle cx="61" cy="73" r="2.2" fill="rgba(60,120,200,0.55)"/>
+          <circle cx="69" cy="77" r="2.2" fill="rgba(60,120,200,0.55)"/>
+          <circle cx="77" cy="74" r="2.2" fill="rgba(60,120,200,0.55)"/>
+          <text x="56" y="96" text-anchor="middle" font-size="7" fill="#777">Complexity Proxy</text>
+          <text x="56" y="104" text-anchor="middle" font-size="6.5" fill="#999">OLS: R&#178;=0.031, p=0.31</text>
+        </svg>
+        <div class="side-vc-desc">Nearly flat regression line. <strong>OLS regression</strong> shows block × button count explains under 4% of effort variance (R²=0.031, p=0.31 — not significant). Layout geometry, not object count, drove difficulty.</div>
+      </div>
+
+    </div>
+  </div>
+
+
+</div><!-- col-right -->
+
+</div><!-- .poster -->
+
+<script>
+(function() {
+  const BOX_SELECTORS = [
+    '.col-left > div',
+    '.col-right > div',
+    '.solver-panel',
+    '.side-viz-card',
+    '.mech-node',
+    '.flow-wrap',
+    '.main-finding',
+    '.rq-card',
+    '.ki-card',
+    '.rq-left-card',
+    '.ki-wrap',
+    '.schema-strip',
+    '.action-mix-wrap',
+  ];
+
+  const HANDLE_DIRS = ['t','b','l','r','tl','tr','bl','br'];
+
+  /* ── TEXT RESIZE TOOLBAR ── */
+  const toolbar = document.createElement('div');
+  toolbar.id = 'txt-resize-bar';
+  toolbar.style.cssText = `
+    position:fixed; bottom:18px; left:50%; transform:translateX(-50%);
+    background:rgba(21,71,52,0.96); color:#fff; border-radius:2em;
+    padding:0.4em 1em; display:none; align-items:center; gap:0.7em;
+    font-family:Arial,sans-serif; font-size:12px; z-index:9999;
+    box-shadow:0 4px 20px rgba(0,0,0,0.5); user-select:none;
+    border:1px solid rgba(255,255,255,0.15);
+  `;
+  toolbar.innerHTML = `
+    <span style="opacity:.7;font-size:11px;">🔤 Text size</span>
+    <button id="txt-dec" style="background:rgba(255,255,255,0.15);border:none;color:#fff;width:1.8em;height:1.8em;border-radius:50%;cursor:pointer;font-size:14px;line-height:1;">−</button>
+    <input id="txt-slider" type="range" min="60" max="160" value="100" step="5"
+      style="width:100px;accent-color:#E97132;cursor:pointer;">
+    <button id="txt-inc" style="background:rgba(255,255,255,0.15);border:none;color:#fff;width:1.8em;height:1.8em;border-radius:50%;cursor:pointer;font-size:14px;line-height:1;">+</button>
+    <span id="txt-pct" style="min-width:3em;text-align:center;font-weight:bold;color:#E97132;">100%</span>
+    <button id="txt-reset" style="background:rgba(233,113,50,0.3);border:1px solid rgba(233,113,50,0.6);color:#fff;padding:0.15em 0.6em;border-radius:1em;cursor:pointer;font-size:11px;">Reset</button>
+    <button id="txt-close" style="background:none;border:none;color:rgba(255,255,255,0.5);cursor:pointer;font-size:16px;line-height:1;padding:0 0.2em;">×</button>
+  `;
+  document.body.appendChild(toolbar);
+
+  let activeEl = null;
+  let baseScale = 1;
+
+  function showToolbar(el) {
+    activeEl = el;
+    const stored = parseFloat(el.dataset.txtScale || '1');
+    baseScale = stored;
+    const pct = Math.round(stored * 100);
+    document.getElementById('txt-slider').value = pct;
+    document.getElementById('txt-pct').textContent = pct + '%';
+    toolbar.style.display = 'flex';
+  }
+
+  function applyScale(val) {
+    if (!activeEl) return;
+    activeEl.dataset.txtScale = val / 100;
+    activeEl.style.fontSize = (val / 100) + 'em';
+    document.getElementById('txt-pct').textContent = val + '%';
+  }
+
+  document.getElementById('txt-slider').addEventListener('input', e => applyScale(+e.target.value));
+  document.getElementById('txt-dec').addEventListener('click', () => {
+    const s = document.getElementById('txt-slider');
+    s.value = Math.max(+s.min, +s.value - 5);
+    applyScale(+s.value);
+  });
+  document.getElementById('txt-inc').addEventListener('click', () => {
+    const s = document.getElementById('txt-slider');
+    s.value = Math.min(+s.max, +s.value + 5);
+    applyScale(+s.value);
+  });
+  document.getElementById('txt-reset').addEventListener('click', () => {
+    const s = document.getElementById('txt-slider');
+    s.value = 100;
+    applyScale(100);
+    if (activeEl) activeEl.style.fontSize = '';
+  });
+  document.getElementById('txt-close').addEventListener('click', () => {
+    toolbar.style.display = 'none';
+    activeEl = null;
+  });
+
+  /* ── RESIZE HANDLES ── */
+  function freezeFlexSiblings(el) {
+    const parent = el.parentElement;
+    if (!parent) return;
+    const pStyle = getComputedStyle(parent);
+    if (pStyle.display !== 'flex' && pStyle.display !== 'inline-flex') return;
+    Array.from(parent.children).forEach(child => {
+      if (child.classList.contains('rh')) return;
+      const r = child.getBoundingClientRect();
+      child.style.flexGrow   = '0';
+      child.style.flexShrink = '0';
+      child.style.flexBasis  = 'auto';
+      child.style.width      = r.width  + 'px';
+      child.style.height     = r.height + 'px';
+    });
+    parent.style.flexWrap = 'nowrap';
+  }
+
+  function addHandles(el) {
+    if (el.dataset.resizable) return;
+    el.dataset.resizable = '1';
+    el.classList.add('resizable');
+    const cs = getComputedStyle(el);
+    if (cs.position === 'static') el.style.position = 'relative';
+
+    /* click → show text toolbar */
+    el.addEventListener('click', function(e) {
+      if (e.target.classList.contains('rh') || e.target.closest('.rh')) return;
+      if (e.target.id && e.target.id.startsWith('txt-')) return;
+      showToolbar(el);
+    });
+
+    HANDLE_DIRS.forEach(dir => {
+      const h = document.createElement('div');
+      h.className = `rh rh-${dir}`;
+      h.dataset.dir = dir;
+      el.appendChild(h);
+      h.addEventListener('mousedown', onMouseDown);
+    });
+  }
+
+  function onMouseDown(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    const handle = e.currentTarget;
+    const dir = handle.dataset.dir;
+    const el = handle.closest('.resizable');
+    el.classList.add('resizing');
+    freezeFlexSiblings(el);
+    const startX = e.clientX;
+    const startY = e.clientY;
+    const rect = el.getBoundingClientRect();
+    const startW = rect.width;
+    const startH = rect.height;
+    const startLeft = el.offsetLeft;
+    const startTop  = el.offsetTop;
+    el.style.flexGrow   = '0';
+    el.style.flexShrink = '0';
+    el.style.flexBasis  = 'auto';
+    el.style.width      = startW + 'px';
+    el.style.height     = startH + 'px';
+    el.style.overflow   = 'hidden';
+
+    function onMove(ev) {
+      const dx = ev.clientX - startX;
+      const dy = ev.clientY - startY;
+      if (dir.includes('r'))  el.style.width  = Math.max(60, startW + dx) + 'px';
+      if (dir.includes('b'))  el.style.height = Math.max(30, startH + dy) + 'px';
+      if (dir.includes('l')) {
+        const nw = Math.max(60, startW - dx);
+        el.style.width = nw + 'px';
+        el.style.left  = (startLeft + (startW - nw)) + 'px';
+      }
+      if (dir.includes('t')) {
+        const nh = Math.max(30, startH - dy);
+        el.style.height = nh + 'px';
+        el.style.top    = (startTop + (startH - nh)) + 'px';
+      }
+    }
+
+    function onUp() {
+      el.classList.remove('resizing');
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    }
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  }
+
+  function init() {
+    BOX_SELECTORS.forEach(sel => {
+      document.querySelectorAll(sel).forEach(addHandles);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+
+</body>
+</html>
