@@ -7,7 +7,7 @@ This repository hosts the academic research poster as a static GitHub Pages site
 
 ## View the Poster
 
-👉 **[View live poster]()**
+👉 **[View live poster](https://deijiokzen.github.io/Poster-Website-Upload/)**
 
 
 
