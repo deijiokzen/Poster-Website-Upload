@@ -7,7 +7,7 @@
 <style>
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
-html { font-size: clamp(6.5px, 0.92vw, 11.5px); }
+html { font-size: clamp(8px, 1.15vw, 14px); }
 
 body {
   background: #555;
@@ -241,55 +241,9 @@ body {
 /* ── EVENT BAR WRAP ── */
 .event-bar-wrap svg { width:100%; height:auto; display:block; }
 
-/* ── RESIZABLE BOXES ── */
+/* ── COLUMN OVERFLOW CONTAINMENT ── */
 .col-left > *, .col-right > * { max-width: 100%; }
 .col-left svg, .col-right svg, .col-left img, .col-right img { max-width: 100%; }
-.resizable {
-  position: relative;
-  box-sizing: border-box;
-  min-width: 40px;
-  min-height: 20px;
-}
-.resizable .rh {
-  position: absolute;
-  z-index: 100;
-  opacity: 0;
-  transition: opacity 0.15s;
-}
-.resizable:hover .rh,
-.resizable.resizing .rh { opacity: 1; }
-.rh.rh-l { left:-3px;  top:10%; height:80%; width:6px; cursor:ew-resize; }
-.rh.rh-r { right:-3px; top:10%; height:80%; width:6px; cursor:ew-resize; }
-.rh.rh-t { top:-3px;    left:10%; width:80%; height:6px; cursor:ns-resize; }
-.rh.rh-b { bottom:-3px; left:10%; width:80%; height:6px; cursor:ns-resize; }
-.rh.rh-tl { top:-4px; left:-4px;  width:10px; height:10px; cursor:nwse-resize; }
-.rh.rh-tr { top:-4px; right:-4px; width:10px; height:10px; cursor:nesw-resize; }
-.rh.rh-bl { bottom:-4px; left:-4px;  width:10px; height:10px; cursor:nesw-resize; }
-.rh.rh-br { bottom:-4px; right:-4px; width:10px; height:10px; cursor:nwse-resize; }
-.rh::after {
-  content: '';
-  position: absolute;
-  background: rgba(233,113,50,0.75);
-  border-radius: 50%;
-  inset: 1px;
-}
-.rh.rh-l::after, .rh.rh-r::after {
-  top: 50%; left: 50%;
-  width: 4px; height: 16px;
-  transform: translate(-50%, -50%);
-  border-radius: 2px;
-}
-.rh.rh-t::after, .rh.rh-b::after {
-  top: 50%; left: 50%;
-  width: 16px; height: 4px;
-  transform: translate(-50%, -50%);
-  border-radius: 2px;
-}
-.rh.rh-tl::after, .rh.rh-tr::after, .rh.rh-bl::after, .rh.rh-br::after {
-  width: 6px; height: 6px;
-  inset: 50%;
-  transform: translate(-50%, -50%);
-}
 </style>
 </head>
 <body>
@@ -307,7 +261,7 @@ body {
       <circle cx="14" cy="9" r="6" fill="#154734"/>
       <ellipse cx="14" cy="22" rx="10" ry="5" fill="#154734"/>
     </svg>
-    <span class="author-name">Saud Ahmed Abbasi</span>
+    <span class="author-name">Saud Ahmed Abbasi &nbsp;(0843960)</span>
   </div>
 
   <!-- Introduction -->
@@ -451,7 +405,7 @@ body {
   </div>
 
   <div class="main-finding">
-    <p>Design a puzzle.<br>You won't know how hard it is until the AI breaks a sweat.</p>
+    <p>Design a puzzle. You won't know how hard it is until the AI breaks a sweat.</p>
     <div class="sub-find">Two AI solvers across 35 levels show that object counts barely predict effort. What drove difficulty was how the AI played — duplication depth, board geometry, and search strategy left far stronger signals in the data than the level design ever did.</div>
   </div>
 
@@ -792,194 +746,7 @@ body {
 
 </div><!-- .poster -->
 
-<script>
-(function() {
-  const BOX_SELECTORS = [
-    '.col-left > div',
-    '.col-right > div',
-    '.solver-panel',
-    '.side-viz-card',
-    '.mech-node',
-    '.flow-wrap',
-    '.main-finding',
-    '.rq-card',
-    '.ki-card',
-    '.rq-left-card',
-    '.ki-wrap',
-    '.schema-strip',
-    '.action-mix-wrap',
-  ];
 
-  const HANDLE_DIRS = ['t','b','l','r','tl','tr','bl','br'];
-
-  /* ── TEXT RESIZE TOOLBAR ── */
-  const toolbar = document.createElement('div');
-  toolbar.id = 'txt-resize-bar';
-  toolbar.style.cssText = `
-    position:fixed; bottom:18px; left:50%; transform:translateX(-50%);
-    background:rgba(21,71,52,0.96); color:#fff; border-radius:2em;
-    padding:0.4em 1em; display:none; align-items:center; gap:0.7em;
-    font-family:Arial,sans-serif; font-size:12px; z-index:9999;
-    box-shadow:0 4px 20px rgba(0,0,0,0.5); user-select:none;
-    border:1px solid rgba(255,255,255,0.15);
-  `;
-  toolbar.innerHTML = `
-    <span style="opacity:.7;font-size:11px;">🔤 Text size</span>
-    <button id="txt-dec" style="background:rgba(255,255,255,0.15);border:none;color:#fff;width:1.8em;height:1.8em;border-radius:50%;cursor:pointer;font-size:14px;line-height:1;">−</button>
-    <input id="txt-slider" type="range" min="60" max="160" value="100" step="5"
-      style="width:100px;accent-color:#E97132;cursor:pointer;">
-    <button id="txt-inc" style="background:rgba(255,255,255,0.15);border:none;color:#fff;width:1.8em;height:1.8em;border-radius:50%;cursor:pointer;font-size:14px;line-height:1;">+</button>
-    <span id="txt-pct" style="min-width:3em;text-align:center;font-weight:bold;color:#E97132;">100%</span>
-    <button id="txt-reset" style="background:rgba(233,113,50,0.3);border:1px solid rgba(233,113,50,0.6);color:#fff;padding:0.15em 0.6em;border-radius:1em;cursor:pointer;font-size:11px;">Reset</button>
-    <button id="txt-close" style="background:none;border:none;color:rgba(255,255,255,0.5);cursor:pointer;font-size:16px;line-height:1;padding:0 0.2em;">×</button>
-  `;
-  document.body.appendChild(toolbar);
-
-  let activeEl = null;
-  let baseScale = 1;
-
-  function showToolbar(el) {
-    activeEl = el;
-    const stored = parseFloat(el.dataset.txtScale || '1');
-    baseScale = stored;
-    const pct = Math.round(stored * 100);
-    document.getElementById('txt-slider').value = pct;
-    document.getElementById('txt-pct').textContent = pct + '%';
-    toolbar.style.display = 'flex';
-  }
-
-  function applyScale(val) {
-    if (!activeEl) return;
-    activeEl.dataset.txtScale = val / 100;
-    activeEl.style.fontSize = (val / 100) + 'em';
-    document.getElementById('txt-pct').textContent = val + '%';
-  }
-
-  document.getElementById('txt-slider').addEventListener('input', e => applyScale(+e.target.value));
-  document.getElementById('txt-dec').addEventListener('click', () => {
-    const s = document.getElementById('txt-slider');
-    s.value = Math.max(+s.min, +s.value - 5);
-    applyScale(+s.value);
-  });
-  document.getElementById('txt-inc').addEventListener('click', () => {
-    const s = document.getElementById('txt-slider');
-    s.value = Math.min(+s.max, +s.value + 5);
-    applyScale(+s.value);
-  });
-  document.getElementById('txt-reset').addEventListener('click', () => {
-    const s = document.getElementById('txt-slider');
-    s.value = 100;
-    applyScale(100);
-    if (activeEl) activeEl.style.fontSize = '';
-  });
-  document.getElementById('txt-close').addEventListener('click', () => {
-    toolbar.style.display = 'none';
-    activeEl = null;
-  });
-
-  /* ── RESIZE HANDLES ── */
-  function freezeFlexSiblings(el) {
-    const parent = el.parentElement;
-    if (!parent) return;
-    const pStyle = getComputedStyle(parent);
-    if (pStyle.display !== 'flex' && pStyle.display !== 'inline-flex') return;
-    Array.from(parent.children).forEach(child => {
-      if (child.classList.contains('rh')) return;
-      const r = child.getBoundingClientRect();
-      child.style.flexGrow   = '0';
-      child.style.flexShrink = '0';
-      child.style.flexBasis  = 'auto';
-      child.style.width      = r.width  + 'px';
-      child.style.height     = r.height + 'px';
-    });
-    parent.style.flexWrap = 'nowrap';
-  }
-
-  function addHandles(el) {
-    if (el.dataset.resizable) return;
-    el.dataset.resizable = '1';
-    el.classList.add('resizable');
-    const cs = getComputedStyle(el);
-    if (cs.position === 'static') el.style.position = 'relative';
-
-    /* click → show text toolbar */
-    el.addEventListener('click', function(e) {
-      if (e.target.classList.contains('rh') || e.target.closest('.rh')) return;
-      if (e.target.id && e.target.id.startsWith('txt-')) return;
-      showToolbar(el);
-    });
-
-    HANDLE_DIRS.forEach(dir => {
-      const h = document.createElement('div');
-      h.className = `rh rh-${dir}`;
-      h.dataset.dir = dir;
-      el.appendChild(h);
-      h.addEventListener('mousedown', onMouseDown);
-    });
-  }
-
-  function onMouseDown(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    const handle = e.currentTarget;
-    const dir = handle.dataset.dir;
-    const el = handle.closest('.resizable');
-    el.classList.add('resizing');
-    freezeFlexSiblings(el);
-    const startX = e.clientX;
-    const startY = e.clientY;
-    const rect = el.getBoundingClientRect();
-    const startW = rect.width;
-    const startH = rect.height;
-    const startLeft = el.offsetLeft;
-    const startTop  = el.offsetTop;
-    el.style.flexGrow   = '0';
-    el.style.flexShrink = '0';
-    el.style.flexBasis  = 'auto';
-    el.style.width      = startW + 'px';
-    el.style.height     = startH + 'px';
-    el.style.overflow   = 'hidden';
-
-    function onMove(ev) {
-      const dx = ev.clientX - startX;
-      const dy = ev.clientY - startY;
-      if (dir.includes('r'))  el.style.width  = Math.max(60, startW + dx) + 'px';
-      if (dir.includes('b'))  el.style.height = Math.max(30, startH + dy) + 'px';
-      if (dir.includes('l')) {
-        const nw = Math.max(60, startW - dx);
-        el.style.width = nw + 'px';
-        el.style.left  = (startLeft + (startW - nw)) + 'px';
-      }
-      if (dir.includes('t')) {
-        const nh = Math.max(30, startH - dy);
-        el.style.height = nh + 'px';
-        el.style.top    = (startTop + (startH - nh)) + 'px';
-      }
-    }
-
-    function onUp() {
-      el.classList.remove('resizing');
-      document.removeEventListener('mousemove', onMove);
-      document.removeEventListener('mouseup', onUp);
-    }
-
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
-  }
-
-  function init() {
-    BOX_SELECTORS.forEach(sel => {
-      document.querySelectorAll(sel).forEach(addHandles);
-    });
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-})();
-</script>
 
 </body>
 </html>
